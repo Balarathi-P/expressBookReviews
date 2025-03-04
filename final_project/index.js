@@ -25,7 +25,6 @@ app.use("/customer/auth/*", function auth(req, res, next){
         return res.status(403).json({ message: "Invalid or expired token." });
     }
 });
-
  
 const PORT =5000;
 
