@@ -10,28 +10,22 @@ app.use(express.json());
 
 app.use("/customer",session({secret:"fingerprint_customer",resave: true, saveUninitialized: true}))
 
-app.use("/customer/auth/*", function auth(req,res,next){
-//Write the authenication mechanism here
+app.use("/customer/auth/*", function auth(req, res, next){
+    if (!req.session.authorization) {
+        return res.status(401).json({ message: "Unauthorized. Please log in." });
+    }
 
-let user = req.body.user;
+    const token = req.session.authorization.accessToken;
 
-if(!user){
-
-    res.status(404).json({message : "Body Empty"});
-}
-
-let accessToken = jwt.sign({
-    data: user
-}, 'access', { expiresIn: 60 * 60 });
-
-req.session.authorization = {
-
-    accessToken
-}
-
-return res.status(200).send("User successfully logged in");
-
+    try {
+        const decoded = jwt.verify(token, 'access'); // Verify token
+        req.user = decoded.data; // Attach user data to request
+        next(); // Continue to protected routes
+    } catch (error) {
+        return res.status(403).json({ message: "Invalid or expired token." });
+    }
 });
+
  
 const PORT =5000;
 
