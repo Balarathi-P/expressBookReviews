@@ -21,8 +21,8 @@ public_users.post("/register", (req,res) => {
   }
 
   const newUser = {username, password};
-  user.push(newUser);
-  res.status(201).send("Username created");
+  users.push(newUser);
+  res.status(201).json(users);
 });
 
 // Get the book list available in the shop
